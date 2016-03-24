@@ -1,4 +1,6 @@
 自学Python过程中对于理解比较困难的难点
+提示:在运行文中的程序时，若出现错误多半是由于编码问题，
+只需将代码中的中文注释去掉即可
 
 1.*与**的作用
 在python中经常会在在函数定义和参数传递时看到*与**, 经过学习可能对于在函数定以的用法能够理解，但在参数传递时确难于理解。
@@ -104,3 +106,56 @@ print add(*arg_dict) # Right
 print add(**arg_dict) # Wrong
 print add(*arg_cls) # Right
 
+2.元类(metaclass)的理解
+元类的概念在很多语言中都存在尤其在具有一切皆对象的编程语言中，例如Objective-c和Ruby。Python中对于元类的理解意味着你对Python的
+深度。那么什么元类，直白的理解元类就是创建类的类。在Python中类(class)也可以看成是一个对象，而它的类型是type。由此我们定义一个
+类可以通过两种方式实现，一种是使用class关键字定义，另一种是使用函数type(class_name,class_bases,class_attrs)创建。实际上Python解释器遇到class定义时，仅仅是扫描一下class定义的语法，也是调用type()函数创建出class。type制定了解释器如何创建一个类，因此type
+和派生自type的类就叫做元类。Python的类中有个__metaclass__的属性，该属性指明了该类的元类是那个。在定义类是解释器会默认设置类的
+元类，因此如果我们想改变类如何创建，我们其实可以通过改变__metaclass__指定的元类即可。
+
+#方法1：使用关键字class定义类
+class person:
+    def __init_(self,name):
+         self.name=name
+         
+    def sayname(self):
+        print self.name
+        
+#实例化一个对象p
+p=person('stone')
+p.sayname()
+
+#方法2：使用type创建类
+def constructor(memery,name):
+    memery.name=name
+    
+def printfrom(memery):
+    print memery.name
+    
+class_name='person' #类名
+class_bases=()      #继承类列表
+class_attrs={'__init__':constructor,'sayname':printfrom} #类方法注册字典
+person=type(class_name,class_bases,class_attrs)
+
+#实例化一个对象p
+p=person('stone')
+p.sayname()
+
+#定义自己的元类，即继承type类
+#该元类的行为是控制类的创建对象只能是单列
+class Singleton(type):
+    def __init__(self,name,extends,methods):
+        super(Singleton,self).__init__(name,extends,methods)
+        self.instance=None
+        
+    def __call__(self, *args, **kwargs):
+        if self.instance is None:
+            self.instance=super(Singleton,self).__call__(*args, **kwargs)
+        return self.instance
+        
+class DBManager(object):
+    __metaclass__=Singleton
+    
+#两次创建的对象其实是同一个对象
+print DBManager()
+print DBManager()
