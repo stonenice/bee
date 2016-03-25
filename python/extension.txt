@@ -1,0 +1,28 @@
+标题:Python扩展
+
+描述:Python的一大特点是易于用别的编程语言进行扩展，因此Python也别人称为胶水语言。下面的内容是
+说明如何使用其它语言对Python进行扩展或通过其它语言解决Python性能的不足。
+
+内容:Python是一门解释型语言，既然是解释型语言那么程序的运行必然需要依赖解释器。Python的解释很
+多，如CPython, JPython, IronPython和PyPy。根据名字可以知道CPython的实现是由C语言完成的，因此
+对C语言和C语言库有天然的契合。Jython是运行在Java平台上的Python解释器，可以直接把Python代码编译
+成Java字节码执行。IronPython和Jython类似，只不过IronPython是运行在微软.Net平台上的Python解释器，
+可以直接把Python代码编译成.Net的中间码。在众多的解释器中CPython最为广泛，也是Python默认的解释器。
+
+下面主要以CPython为主说明Python的扩展。由于Python的解释器都是由C语言编写的，因此自然可以使用C对
+Python进行功能扩展。但这种方法需要编写C，编写Python包装接口，编译，安装，最后才能使用自己写的功
+能，过程非常繁琐。基于此Python种出现了一些库能够狠编辑实现以上功能。常见的有ctypes, swig, sip,
+cython, cffi等。
+
+方法一：使用原始的方法利用C扩展Python
+
+方法二:ctypes
+
+方法三:swig
+
+方法四:sip
+
+方法五:cython
+
+方法六:cffi
+
