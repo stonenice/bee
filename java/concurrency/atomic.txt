@@ -1,0 +1,112 @@
+Questions: What is the atomic operation?
+Answer: the atomic operation means that a operation or a series of operations cannot be interupted as it is running.
+In brief words, doing all what it wants to do is success, otherwise, nothing will be do.
+
+Questions: How to finish our tasks in java atomically?
+Answer:Use the CAS algorithm or Lock
+
+Questions: What is the CAS algorithm?
+Answer:if the value isn't modified by other threads as the current thread update it's value. the return will be true 
+and else false.
+
+Examples:
+CONTENT: There is a example which can help you to understand how to implement the atomic operation in java.
+CODE: 
+
+public class CycleCASTest {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+		CycleCASTest cas=new CycleCASTest();
+		List<Thread> threads=new ArrayList<>();
+		
+		//create threads
+		for(int i=0;i<600;i++)
+		{
+			Thread t=new Thread(){
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					for(int i=0;i<10000;++i)
+					{
+					    cas.safeCountByCAS();
+					    cas.safeCountByLock();
+						cas.unsafeCount();
+					}
+				}
+			};
+			
+			threads.add(t);
+		}
+		
+		//start all threads
+		for(Thread t:threads)
+		{
+			t.start();
+		}
+		
+		//the main thread wait all the sub-threads
+		for(Thread t:threads)
+		{
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		//print the result
+		System.out.println("unsafe "+cas.unsafeI.get());
+		System.out.println("safe-cas "+cas.safecas.get());
+		System.out.println("safe-lock "+cas.safelock.get());
+	}
+	
+	//define counter
+	private AtomicInteger safecas=new AtomicInteger(0);
+	private AtomicInteger safelock=new AtomicInteger(0);
+	private AtomicInteger unsafeI=new AtomicInteger(0);
+	
+	private Lock lock=new ReentrantLock();
+	
+	//use the CAS algorithm of concurrency to implement a counter
+	private void safeCountByCAS()
+	{
+		boolean suc=false;
+		
+		do
+		{
+			int expect=safecas.get();
+			suc=safecas.compareAndSet(expect, ++expect);
+			
+		}while(suc==false);
+		//if the value isn't modified by other threads 
+		//while the current thread update it's value.
+		// the return will be true and else false.
+	}
+	
+	private void safeCountByLock()
+	{
+		lock.lock();
+		try
+		{
+		    int expect=safelock.get();
+		    safelock.set(++expect);
+		    lock.unlock();
+		}
+		catch(Exception e)
+		{
+			lock.unlock();
+		}
+		
+	}
+	
+	//unsafe count
+	private void unsafeCount()
+	{
+		int expect=unsafeI.get();
+		unsafeI.set(++expect);
+	}
+
+}
