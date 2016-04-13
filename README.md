@@ -5,10 +5,11 @@ if you interest in my notes and read it carefully, you will find some
 answers you are looking for.
 
 Contents:
-/---
-   |
-  java---------------------------
-   |                            |
- python----------           Concurrency
-   |            |               |
- linux--------                 jvm
+{
+    "java":{
+        "concurrency":[],
+        "jvm":["gc.txt","java-memory-divid.txt"]
+    },
+    "python":["difficulties.txt","extensions.txt"],
+    "linux":[]
+}
