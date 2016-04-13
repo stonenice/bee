@@ -7,9 +7,9 @@ answers you are looking for.
 Contents:
 {
     "java":{
-        "concurrency":[],
-        "jvm":["gc.txt","java-memory-divid.txt"]
+        "concurrency":["atomic.txt","notes.txt"],
+        "jvm":["gc.txt","java-memory-divide.txt"]
     },
-    "python":["difficulties.txt","extensions.txt"],
-    "linux":[]
+    "python":["difficulties.txt","extension.txt"],
+    "linux":["commands.txt"]
 }
