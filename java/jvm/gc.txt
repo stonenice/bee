@@ -219,6 +219,9 @@ G1收集器的主要特点:
 3）G1整体上基于标记-整理算法，局部上基于复制算法，因此不会像CMS一样产生大量内存碎片。
 4）可根据每个Region的回收价值进行选择性回收，确保每次回收时长不超过用户指定的时间。
 
-
+8.Minor GC和Major GC
+Minor GC:Minor GC即为新生代GC,表示对新生代进行了垃圾收集过程。由于新生代对象存活率低，所以Minor GC非常频繁，但速度快。
+Major GC/Full GC:Major GC即为老年代GC,表示对老年代进行了垃圾收集过程，通常发生一次Major GC可能发生一次或多次Minor GC，
+Major GC一本比Minor GC慢10倍。
 
 
