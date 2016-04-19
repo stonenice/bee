@@ -224,4 +224,8 @@ Minor GC:Minor GC即为新生代GC,表示对新生代进行了垃圾收集过程
 Major GC/Full GC:Major GC即为老年代GC,表示对老年代进行了垃圾收集过程，通常发生一次Major GC可能发生一次或多次Minor GC，
 Major GC一本比Minor GC慢10倍。
 
-
+9.空间担保
+在进行Minor GC时，由于新生代采用的是复制算法，所以会将Working Survivor与Eden中存活的对象一起复制到Free Survivor中。但如果是
+出现Eden中的对象突然存活很多，Eden+Working Survivor中的对象大于Free Survivor的容量，那么就会出现不能安全复制的风险。因此，可
+以将Working Survivor中移走一部分到老年代中。空间担保就是确保老年代中最大可用的连续空间是否大于新生代中所有存活对象的大小，
+以便安全进行Minor GC。
