@@ -1,0 +1,17 @@
+下面是JVM中与垃圾收集相关的参数，可以根据这些参数对JVM的性能进行优化：
+UseSerialGC
+UseParNewGC
+UseConcMarkSweepGC
+UseParallelGC
+UseParallelOldGC
+SurvivorRatio
+PretenureSizeThreshold
+MaxTenuringThreshold
+UseAdaptiveSizePolicy
+HandlePromotionFailure
+ParallelGCThreads
+GCTimeRatio
+MaxGcPauseMillis
+CMSInitiatingOccupancyFraction
+UseCMSCompactAtFullCollection
+CMSFullGCsBeforeCompaction
