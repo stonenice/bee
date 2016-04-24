@@ -1,0 +1,17 @@
+Java的数据类型分为基本类型与引用类型两大类，基本数据类型有:short, int, long, char, byte, boolean, float, double共8种基本类型。
+Java中每种基本类型都有对应的引用类型：Short, Integer, Long, Character, Byte, Boolean, Float, Double。其与基本数据类型的区别主
+要在引用类型不仅定义了数据的结构还定义了数据的操作。
+
+由于Java是一门面向对象的编程语言，因此对数据的处理会以对象的方式去处理（List<T>的元素必须是引用类型）。这就存在基本数据类型
+与引用类型之间的转化，在Java中称这两个过程为装箱与拆箱，且两个过程由系统自动完成。
+
+装箱：将基本数据类型转化为其对应的引用类型，如int -> Integer，char -> Character.
+
+拆箱：和装箱相反，将引用类型的对象简化成值类型的数据.
+
+基本类型与引用类型的比较：
+int a=120;
+Integer b=new Integer(120);
+
+boolean f1=(a==b);    //false
+boolean f2=(b.equals(a));    //true
