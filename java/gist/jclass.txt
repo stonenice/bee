@@ -1,0 +1,20 @@
+Class文件格式间记：My Very Cute Animal Turns Savage In Full Moon Areas
+
+Type              Name                   Num
+===============================================================
+u4                magic                  1
+u2                minor_version          1
+u2                major_version          1
+u2                constant_pool_count    1
+cp_info           constant_pool          constant_pool_count-1 (常量池的索引从1开始而不是0,索引0表示不引用任何一个常量池中的项目)
+u2                access_flag            1
+u2                this_class             1
+u2                super_class            1
+u2                interfaces_count       1
+u2                interfaces             interfaces_count
+u2                fields_count           1
+field_info        fields                 fields_count
+u2                methods_count          1
+method_info       methods                methods_count
+u2                attributes_count       1
+attribute_info    attributes             attributes_count
