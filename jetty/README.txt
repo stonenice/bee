@@ -112,7 +112,10 @@ Jetty:http://www.eclipse.org/jetty/download.html
         <Set name="war"><Property name="jetty.webapps" default="."/>/hello</Set>
     </Configure>
     
-    contexPath为项目访问地址的虚拟目录，war为项目的位置，这里可以是压缩包也可以是目录
+    contexPath为项目访问地址的虚拟目录，war为项目的位置，这里可以是压缩包也可以是目录.
+    仔细研究war配置项可以发现配置项目部署的位置为<Property name="jetty.webapps" default="."/>/hello其可以等同于
+    ${jetty.webapps}/hello来理解。由此可以看出，如果你想将项目部署在其它目录，如/var/jetty/www. 那么你的项目目录
+    应该设置为<Set name="war">/var/jetty/www/hello</Set>
     
     执行脚本jetty.sh start 启动服务完成部署
 
