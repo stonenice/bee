@@ -1,0 +1,265 @@
+下面给出的两段代码都是计算1千万个数的和。原理为使用一个线程池(FixedThreadPool),将一千万个数分成10个执行单元，
+一个执行单元计算一百万个数。每个执行单元独立执行完后再整体求和。Normal与Improve两个的区别在于，后者在整体求和
+时会将已经完成的结果先行计算即不按顺序，谁先完成就先将其整体求和。Normal的规则是即便后面的执行单元已经完成，但
+当前的还没完成也得等到它完成后依次进行整体求和。值得说的是，代码中也比较了单线程与多线程的差别。不管怎么执行，单
+线程的就是要快于多线程的。也再次证明多线程不一定就不单线程速度快。因此具体的环境需要具体分析，不能一概而论。
+
+//Normal
+package com.sto.jclazz.excutor;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+
+public class ParrallelCalcSum {
+	private ExecutorService es;
+	private int cpuCoreNum=1;
+	private int pageSize=100;
+	private List<Long> inputs;
+	private List<FutureTask<Long>> queue=new ArrayList<>();
+	
+	@SuppressWarnings("unused")
+	private ParrallelCalcSum(){};
+	
+	public ParrallelCalcSum(List<Long> inputs){
+		this(inputs,100);
+	}
+	
+	public ParrallelCalcSum(List<Long> inputs,int pageSize){
+		this.cpuCoreNum=Runtime.getRuntime().availableProcessors();
+		this.es=Executors.newFixedThreadPool(cpuCoreNum);
+		
+		this.inputs=inputs;
+	}
+	
+	public Long execute(){
+		if(inputs==null||inputs.size()<=0) return 0l;
+		int total=inputs.size();
+		
+		if(pageSize<=0||pageSize>total) return 0l;
+		
+		int page=total%pageSize==0?total/pageSize:(total/pageSize)+1;
+		
+		if(page<=0) return 0l;
+		
+		for(int i=0;i<page;++i){
+			int start=i*pageSize;
+			int end=start+pageSize-1;
+			if(end>=total) end=total-1;
+			
+			Callable<Long> unit=new CalcUnit(start, end);
+			FutureTask<Long> slice=new FutureTask<>(unit);
+			if(es!=null&&!es.isShutdown()){
+				es.submit(slice);
+				queue.add(slice);
+			}
+		}
+		
+		long sum=0l;
+		try{
+			for(int i=0;i<queue.size();++i){
+				FutureTask<Long> slice=queue.get(i);
+				sum+=slice.get();
+			}
+		}catch (Exception e) {
+			sum=0l;
+		}
+		
+		es.shutdown();
+		
+		return sum;
+	}
+	
+	private class CalcUnit implements Callable<Long>{
+		
+		private int start;
+		private int end;
+		
+		public CalcUnit(int start,int end) {
+			// TODO Auto-generated constructor stub
+			this.start=start;
+			this.end=end;
+		}
+		
+		@Override
+		public Long call() throws Exception {
+			// TODO Auto-generated method stub
+			if(inputs==null||inputs.size()<=0) return 0l;
+			int total=inputs.size();
+			
+			if(start<0||end>=total) return 0l;
+			
+			long sum=0l;
+			for(int i=start;i<=end;i++){
+				sum+=inputs.get(i);
+			}
+			
+			return sum;
+		}
+		
+	}
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		int total=100000000;
+		int realResult=0;
+		long start=0,end=0;
+		
+		List<Long> inputs=new ArrayList<>();
+		for(int i=0;i<total;++i){
+			//Long v = (long) (Math.random()*100);
+			long v=1L;
+			inputs.add(v);
+		}
+
+		start=System.currentTimeMillis();
+		for(int i=0;i<total;++i){
+			realResult+=inputs.get(i);
+		}
+		end=System.currentTimeMillis();
+		System.out.println("RealResult:"+realResult+", Time:"+(end-start));
+		
+		start=System.currentTimeMillis();
+		ParrallelCalcSum calc=new ParrallelCalcSum(inputs,1000000);
+		Long sum=calc.execute();
+		end=System.currentTimeMillis();
+		System.out.println("ParallelResult:"+sum+", Time:"+(end-start));
+	}
+
+}
+
+//Improve
+package com.sto.jclazz.excutor;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+
+public class ParrallelCalcSumCompletion {
+	private ExecutorService es;
+	private CompletionService<Long> cs;
+	private int cpuCoreNum=1;
+	private int pageSize=100;
+	private List<Long> inputs;
+	private List<FutureTask<Long>> queue=new ArrayList<>();
+	
+	@SuppressWarnings("unused")
+	private ParrallelCalcSumCompletion(){};
+	
+	public ParrallelCalcSumCompletion(List<Long> inputs){
+		this(inputs,100);
+	}
+	
+	public ParrallelCalcSumCompletion(List<Long> inputs,int pageSize){
+		this.cpuCoreNum=Runtime.getRuntime().availableProcessors();
+		es = Executors.newFixedThreadPool(cpuCoreNum);
+		this.cs=new ExecutorCompletionService<>(es);
+		this.inputs=inputs;
+	}
+	
+	public Long execute(){
+		if(inputs==null||inputs.size()<=0) return 0l;
+		int total=inputs.size();
+		
+		if(pageSize<=0||pageSize>total) return 0l;
+		
+		int page=total%pageSize==0?total/pageSize:(total/pageSize)+1;
+		
+		if(page<=0) return 0l;
+		
+		for(int i=0;i<page;++i){
+			int start=i*pageSize;
+			int end=start+pageSize-1;
+			if(end>=total) end=total-1;
+			
+			Callable<Long> unit=new CalcUnit(start, end);
+			FutureTask<Long> slice=new FutureTask<>(unit);
+			if(cs!=null&&!es.isShutdown()){
+				cs.submit(unit);
+				queue.add(slice);
+			}
+		}
+		
+		long sum=0l;
+		try{
+			for(int i=0;i<queue.size();++i){
+				sum+=cs.take().get();
+			}
+		}catch (Exception e) {
+			sum=0l;
+		}
+		
+		es.shutdown();
+		
+		return sum;
+	}
+	
+	private class CalcUnit implements Callable<Long>{
+		
+		private int start;
+		private int end;
+		
+		public CalcUnit(int start,int end) {
+			// TODO Auto-generated constructor stub
+			this.start=start;
+			this.end=end;
+		}
+		
+		@Override
+		public Long call() throws Exception {
+			// TODO Auto-generated method stub
+			if(inputs==null||inputs.size()<=0) return 0l;
+			int total=inputs.size();
+			
+			if(start<0||end>=total) return 0l;
+			
+			long sum=0l;
+			for(int i=start;i<=end;i++){
+				sum+=inputs.get(i);
+			}
+			
+			return sum;
+		}
+		
+	}
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		int total=100000000;
+		int realResult=0;
+		long start=0,end=0;
+		
+		List<Long> inputs=new ArrayList<>();
+		for(int i=0;i<total;++i){
+			//Long v = (long) (Math.random()*100);
+			long v=1L;
+			inputs.add(v);
+		}
+		
+		
+		start=System.currentTimeMillis();
+		for(int i=0;i<total;++i){
+			realResult+=inputs.get(i);
+		}
+		end=System.currentTimeMillis();
+		System.out.println("RealResult:"+realResult+", Time:"+(end-start));
+		
+		start=System.currentTimeMillis();
+		ParrallelCalcSumCompletion calc=new ParrallelCalcSumCompletion(inputs,1000000);
+		Long sum=calc.execute();
+		end=System.currentTimeMillis();
+		System.out.println("ParallelResult:"+sum+", Time:"+(end-start));
+	}
+
+}
+
