@@ -1,0 +1,3 @@
+1. 再Linux或Unix中动态链接so与执行程序在同一目录，但就是会报不能加载共享库的错误，错误如下：
+./test: error while loading shared libraries: libsort.so: cannot open shared object file: No such file or directory
+解决方法为设置共享库的搜索路径，export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.  
