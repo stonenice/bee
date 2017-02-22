@@ -7,3 +7,4 @@
     python: 同上，解压的目录中有个python的目录，进入该目录，先找下是否存在setup.py文件，若存在执行命令python setup.py install安装。
         若文件不存在则直接将pyspark文件夹及里面的内容复制到$PYTHON_HOME/lib/site-packages. 如果你的机器上没有安装pip那么site-packages
         是不存在的，这事你可以复制到$PYTHON_HOME/lib目录下。老版本的spark中，Python库存在setup.py文件，而新版本中没有。所以存在差异。
+        需要注意的是安装pyspark后还可能需安装py4j,psutil两个库才能正常运行，这里使用pip进行安装： pip install py4j , pip install psutil
