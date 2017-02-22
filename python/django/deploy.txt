@@ -1,0 +1,61 @@
+django 部署最好的方式为Nginx+uwsgi的组合
+
+部署步骤：
+
+1.使用pip进行软件包管理，若系统中未安装pip 可以到https://pypi.python.org/pypi/pip中下载源码安装包，
+在解压目录找到setup.py文件，执行python setup.py install即可完成安装。
+
+2.检查Python的版本是否为2.7+ or 3.0+, 若向CentOS6默认是python2.6且不能随便升级python的可以使用virtualenv解决
+
+3.执行pip install django 安装django
+
+4.安装数据库驱动根据你的要求进行选择，这里仅以MySQL为例。MySQL的驱动有MySQLdb(MySQL-python),mysql-connector,pymysql等。但
+django 与mysql-connect集成不是很好，做这两者的适配麻烦。MySQLdb与pymysql是很好的选择，不过安装MySQLdb之前需
+要先安装MySQL数据库，并且都70%可能安装失败。因此为了减少麻烦，强烈建议安置pymysql. 安装命令: pip install pymysql
+若需要部署的django项目已经使用了MySQLdb, 你可以在django的配置目录，即settings.py文件所在的目录，在该目录中找到__init__.py
+文件。在__init__.py文件中添加如下代码，将pymysql作为MySQLdb使用：
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+5.执行pip install uwsgi 安装uwsgi服务器
+
+6.进入django项目目录，在项目中创建一个uwsgi.ini的配置文件，uwsgi支持xml,ini,json等文件格式。具体配置如下：
+
+[uwsgi]
+socket=127.0.0.1:3031
+chdir=/opt/uwsgi/mscan  #项目目录
+module=mscan.wsgi #任意取名，但前提是标准目录下存在$chdir/<project>/wsgi.py文件，若目录不标准，需要使用wsgi-file指定
+#wsgi-file=mscan/wsgi.py
+master=true
+processes=1
+pidfile=/var/run/wwsgi.pid
+logdate=true
+daemonize=/var/log/uwsgi/uwsgi.log
+
+7. 执行命令uwsgi uwsgi.ini命令启动uwsgi服务
+
+8.修改nginx配置文件，默认在vi /etc/nginx/nginx.conf,或cd /etc/nginx/conf.d/
+在配置文件中修改：
+
+location / {
+    uwsgi_pass 127.0.0.1:3031;
+    include uwsgi_params;
+}
+
+9.执行service nginx start或systemctl start nginx启动服务。
+==============================================================
+可能遇到的问题：
+1. 不能访问项目，出错的原因为如下需要将IP或域名加入ALLOWED_HOSTS,解决方法为将服务器IP或域名加入该变量
+打开settings.py文件，找到变量ALLOWED_HOSTS=[],将其改为ALLOWED_HOSTS=['127.0.0.1','www.test.com']
+
+2.系统静态资源均不能加载
+1）确保settings.py中STATICFILES_DIRS变量存在，且将存放静态文件的目录添加到该变量中，如下
+STATICFILES_DIRS=[
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "portal","static"),
+]
+
+2)修改urls.py文件，添加如下代码：
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns 
+urlpatterns += staticfiles_urlpatterns() 
