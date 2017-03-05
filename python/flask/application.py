@@ -23,6 +23,7 @@
 # date: 2017-03-04
 
 from flask import Flask, Blueprint
+from flask_sqlalchemy import SQLAlchemy
 import settings
 import importlib
 
@@ -30,24 +31,25 @@ import importlib
 class Application(object):
     def __init__(self, name):
         self.__name = name
-        self.__app = Flask(self.__name)
         self.__apps = []
+
+        self.__flaskapp = Flask(self.__name)
+        self.__dbinstance = None
+        self.__initdb()
 
         try:
             self.__static_folder = settings.static_folder
-            if not self.__static_folder or len(self.__static_folder.strip())<=0:
+            if not self.__static_folder or len(self.__static_folder.strip()) <= 0:
                 self.__static_folder = 'static'
         except:
             self.__static_folder = 'static'
 
-
         try:
             self.__templates_folder = settings.templates_folder
-            if not self.__templates_folder or len(self.__templates_folder.strip())<=0:
+            if not self.__templates_folder or len(self.__templates_folder.strip()) <= 0:
                 self.__templates_folder = 'templates'
         except:
             self.__templates_folder = 'templates'
-
 
     def __normalize(self, entry):
         if not isinstance(entry, (tuple, list)):
@@ -109,8 +111,10 @@ class Application(object):
                 except (ImportError, AttributeError) as e:
                     try:
                         module = importlib.import_module(m + '.views')
+                        print module
                         bp = getattr(module, b)
                     except (ImportError, AttributeError) as e:
+                        print e
                         bp = None
 
                 if not isinstance(bp, Blueprint):
@@ -132,7 +136,7 @@ class Application(object):
 
                 bp.template_folder = self.__templates_folder
                 bp.static_folder = self.__static_folder
-                bp.static_url_path = '/%s/%s/%s' % (self.__static_folder, module_name,self.__static_folder)
+                bp.static_url_path = '/%s/%s/%s' % (self.__static_folder, module_name, self.__static_folder)
 
                 new_u = self.__blueprinturl(u, url_prefix, module_name)
 
@@ -140,18 +144,49 @@ class Application(object):
 
                 if new_u and not new_u.startswith('/'):
                     options['url_prefix'] = new_u
-                self.__app.register_blueprint(bp, **options)
+                self.__flaskapp.register_blueprint(bp, **options)
                 self.__apps.append((m, b, new_u))
 
         except Exception, e:
             print e
 
-    def run(self, host='localhost', port=5000, debug=True):
+    def __initdb(self):
+        dbconfig = None
+        binds = {}
+        try:
+            for k, v in settings.DATABASES.iteritems():
+                key = k.strip().lower()
 
+                if key == 'default':
+                    dbconfig = v
+                else:
+                    binds[k] = v
+        except:
+            dbconfig = None
+            binds = {}
+
+        self.__flaskapp.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        if isinstance(dbconfig, str):
+            self.__flaskapp.config['SQLALCHEMY_DATABASE_URI'] = dbconfig
+
+        self.__flaskapp.config['SQLALCHEMY_BINDS'] = binds
+
+        self.__dbinstance = SQLAlchemy(self.__flaskapp)
+
+    def flask_app(self):
+        return self.__flaskapp
+
+    def create_database(self):
+        return self.__dbinstance
+
+    def migrate(self):
+        self.create_database()
+        self.__dbinstance.create_all()
+
+    def runserver(self, host='localhost', port=5000, debug=True):
         self.register_blueprint()
         if debug:
             print self.__apps
-
-        # self.__app.template_folder='templates'
-
-        self.__app.run(host, port, debug)
+        self.__flaskapp.run(host, port, debug)
+        
+        
