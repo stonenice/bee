@@ -29,4 +29,6 @@ ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass4!'; 进行重置密码，
 
 6. 执行命令添加一个远程用户，不然远程连接数据库是不行的。
 
-7. 如果你远程用户创建好了但没有在防火墙中将3306端口对外开放也是不能连接的。
+7. 如果你远程用户创建好了但没有在防火墙中将3306端口对外开放也是不能连接的。CentOS7.x开放端口如下：
+1）firewall-cmd --zone=public --add-port=3306/tcp --permanent
+2）firewall-cmd --reload
