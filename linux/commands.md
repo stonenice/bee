@@ -1,16 +1,24 @@
-命令:ps
+ps
+---
+
 常用参数：
-1.ps -aux 查看系统中正在运行的进程
+1. ps -aux 查看系统中正在运行的进程
 
-命令:netstat
+netstat
+---
+
 常用参数:
-1.netstat -tunlp 查看系统中正在监听的所有端口
+1. netstat -tunlp 查看系统中正在监听的所有端口
 
-命令:kill
+kill
+---
+
 常用参数:
 1.kill -s 9 1023 向进程号(pid)1023的进程发送中止的信号
 
-命令:killall
+killall
+---
+
 常用参数:
 1.killall mysql 结束所有名为mysql的进程
 
