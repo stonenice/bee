@@ -1,7 +1,10 @@
 import {fromJS,is} from 'immutable'
 
-//support to combine a extension reducer
-const applyReducer=(...args)=>{
+export const sleep=(ms=1000)=>{
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export const applyReducer=(...args)=>{
     if(!args||args.length<=0){
         throw Error('no reducers, so it cannot be applied.');
     }
@@ -12,14 +15,11 @@ const applyReducer=(...args)=>{
             let funcs=arg.reducers;
             if(funcs){
                 let s=state.get(arg.namespace);
-                let oldState=fromJS(s?s:state);
+                let nextState=fromJS(s?s:state);
                 for(let k in funcs){
-                    let newState=fromJS(funcs[k](oldState.toJS(),action));
-                    if(!is(oldState,newState)){
-                        return oldState.mergeDeep(newState);
-                    }
+                    nextState=fromJS(funcs[k](nextState.toJS(),action));
                 }
-                return state;
+                return nextState;
             }else{
                 return state;
             }
