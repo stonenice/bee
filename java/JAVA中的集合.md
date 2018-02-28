@@ -31,12 +31,13 @@ Set直接继承自Collection接口,存储的是**无序、不重复**的数据�
 在使用是需要非常小心。 其主要特点为：
 
 1. Set集合不允许出现重复数据
-2. 允许包含值为null的元素，但最多只能有一个null元素。
+2. 允许包含值为null的元素，但最多只能有一个null元素。不过这条规则得根据具体实现类来看，HashSet就支持null元素，因为底层实现是HashMap。
+TreeSet底层是TreeMap的实现，因此TreeSet实现的Set就不支持插入null元素。
 
 |类名|算法|描述|
 |---|---|---|
 |HashSet|Hash散列算法，利用hashCode()算出元素位置后使用equals()判断当前元素和已有元素是否相等，相等则舍弃以实现元素不重复|只要是Hash算法就必须确保hashCode()和equals()方法逻辑的正确性。<br/>HashSet特点是元素无序。<br/>JDK1.8中HashSet的具体实现是使用HashMap进行改造的，支持dummy参数的是使用LinkedHashMap改造而来，因此HashSet允许null,且最多只有一个null|
-|TreeSet|利用平衡二叉树(红黑树算法)的特征实现元素不重复，主要是利用compareTo()对所有元素进行二分查找，如果元素已存在就舍弃|必须确保compareTo()方法逻辑正确.<br/>元素自然有序.<br/>TreeSet是利用TreeMap进行改造而来，其也是至多支持一个null元素|
+|TreeSet|利用平衡二叉树(红黑树算法)的特征实现元素不重复，主要是利用compareTo()对所有元素进行二分查找，如果元素已存在就舍弃|必须确保compareTo()方法逻辑正确.<br/>元素自然有序.<br/>TreeSet是利用TreeMap进行改造而来，不过由于null不能提供compareTo()方法因此TreeSet不支持null元素|
 
 ## List
 ## Map
