@@ -40,6 +40,34 @@ TreeSet底层是TreeMap的实现，因此TreeSet实现的Set就不支持插入nu
 |TreeSet|利用平衡二叉树(红黑树算法)的特征实现元素不重复，主要是利用compareTo()对所有元素进行二分查找，如果元素已存在就舍弃|必须确保compareTo()方法逻辑正确.<br/>元素自然有序.<br/>TreeSet是利用TreeMap进行改造而来，不过由于null不能提供compareTo()方法因此TreeSet不支持null元素|
 
 ## List
+List是有序的Collection，使用此接口能够精确的控制每个元素插入的位置。用户能够使用索引的位置来访问List中的元素其特点是**有序,可重复类**，
+似于Java数组。List关注的是索引，拥有一系列和索引相关的方法，查询速度快。往list集合里插入或删除数据时，会伴随着后面数据的移动，
+所有插入删除数据速度慢（需要根据底层使用的数据结构来定，如果是连续内存块则会这样，如果是链表结构则插入和删除都很快）。
+
+- List允许有相同的元素存在。
+- 除了具有Collection接口必备的的iterator()方法外，还提供了listIterator()方法，放回一个 ListIterator接口。
+- 实现List接口的常用类有ArrayList、LinkedList、Vector(Stack)、CopyOnWriteArrayList
+
+|类名|内容|
+|---|---|
+|ArrayList|底层数据结构是数组，查询快、支持随机访问、增删慢、线程不安全、效率高，其正好与LinkedList互为补充。<br/>ArrayList底层就是Object[] elementData的数据进行实现，因此**实际的类型为Object,对元素的插入获取都会进行拆箱和装箱**。**使用new实例化时容量为零**，只有在添加第一个元素时才分配默认的**容量大小10**。当容量不够需要扩容是，会使用**oldCapacity + (oldCapacity >> 1)的新容量进行扩容，既原容量的1.5倍**。|
+|LinkedList|底层数据结构是双向链表并实现了Deque接口,查询慢,不支持随机访问、增删快、线程不安全、效率高，与ArrayList互为补充。<br/>LinkedList的结构是一个size,first指针,last指针构成的双向链表(双端队列).|
+|Vector(Stack)|Vector是基于Object[] elementData的实现，支持随机访问，使用new实例化时默认大小就是10和ArrayList第一次添加元素时为10不同。扩容时按如下公式进行扩容**oldCapacity + ((capacityIncrement > 0) ?capacityIncrement : oldCapacity),既原来的2倍**进行扩容. 由于使用了synchronized关键字修饰了方法，因此Vector是线程安全的。 Stack直接继承自Vector，只是对元素的访问顺序进行了限制，限制后为后进先出LIFO。|
+|CopyOnWriteArrayList|线程安全，**COW（Copy On Write）**是一种读写分离的思想。新增元素时不直接修改原来数组而是直接复制一份进行修改，修改后再加锁根据数据指针。实现的效果是get方法做到无锁并发，**写时使用ReentryLock进行互斥更新**。具体内容如下：|
+
+**CopyOnWriteArrayList:**<br/>
+CopyOnWrite容器即写时复制的容器。通俗的理解是当我们往一个容器添加元素的时候，不直接往当前容器添加，而是先将当前容器进行Copy，复制出一个新的容器，然后新的容器里添加元素，添加完元素之后，再将原容器的引用指向新的容器。这样做的好处是我们可以对CopyOnWrite容器进行并发的读，而不需要加锁，因为当前容器不会添加任何元素。所以CopyOnWrite容器也是一种读写分离的思想，读和写不同的容器。
+
+优点：
+
+- CopyOnWrite并发容器用于读多写少的并发场景。比如白名单，黑名单，商品类目的访问和更新场景
+- 实现高性能的无锁并发读取
+
+缺点：
+
+- 内存占用问题  因为CopyOnWrite的写时复制机制，所以在进行写操作的时候，内存里会同时驻扎两个对象的内存。很有可能造成频繁的Yong GC和Full GC
+- 数据一致性问题  CopyOnWrite容器只能保证数据的最终一致性，不能保证数据的实时一致性。所以如果你希望写入的的数据，马上能读到，请不要使用CopyOnWrite容器。
+
 ## Map
 ## Queue
 
