@@ -8,3 +8,17 @@
 
 栈上分配依赖于逃逸分析和标量替换实现的，开启从功能需要同时开启-XX:+DoEscapeAnalysis和-XX:+EliminateAllocations两项。需要注意的是
 逃逸分析只有在-server模式下才能生效。
+
+GC日志相关的JVM参数
+---
+-XX:+PrintGC  简单的GC日志<br/>
+-XX:+PrintGCDetails 详细的GC日志，包含GC的类型（Minor GC/Full GC）,GC收集器的类型，导致GC的原因等<br/>
+-XX:+PrintHeapAtGC 在GC时打印当前堆信息<br/>
+-XX:+PrintGCTimeStamps 如果要分析GC发生的时间，需要打印GC的时间戳<br/>
+-XX:+PrintGCApplicationStoppedTime 打印因GC停顿的时间<br/>
+-Xloggc:log.gc 指定GC信息输出的文件位置<br/>
+
+跟踪类加载和卸载
+---
+-XX:TraceClassLoding 追踪类加载<br/>
+-XX:TraceClassLoding 追踪类卸载<br/>
