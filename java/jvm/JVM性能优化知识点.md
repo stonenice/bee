@@ -39,3 +39,13 @@ GC日志相关的JVM参数
 -XX:MaxMetaspaceSize=64M JDK1.8后只有元数据区，默认为系统内存限制，也可进行限制<br>
 -XX:ServivorRatio 新生代中Eden区与Servivor区的比值<br/>
 -XX:NewRatio=老年代/新生代   新生代与老年代的比例 <br/>
+
+G1收集器配置
+---
+-XX:+UseG1GC 开启G1垃圾回收器<br/>
+-XX:MaxGCPauseMillis 目标最大停顿时间，任何一次GC停顿时间超过该值，G1会尝试调整新生代和老年代的比例、堆大小、晋升年龄等。在
+                     混合GC不行是会触发FullGC<br/>
+-XX:ParallelGCThreads 垃圾回收器并发线程数<br/>
+-XX:InitiatingHeapOccupancyPercent 内存使用率达到多少是触发并发标记<b/>
+                     
+
