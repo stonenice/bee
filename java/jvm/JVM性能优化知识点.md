@@ -9,6 +9,16 @@
 栈上分配依赖于逃逸分析和标量替换实现的，开启从功能需要同时开启-XX:+DoEscapeAnalysis和-XX:+EliminateAllocations两项。需要注意的是
 逃逸分析只有在-server模式下才能生效。
 
+TLAB上分配
+---
+TLAB为线程本地分配缓存，主要是加速对象内存的分配，堆为全局共享，多线程竞争激烈，会使性能下降。TLAB本身在Eden空间，JVM在其上为每个
+线程分配独立的空间，检查线程冲突。
+
+-XX:+UseTLAB 开启TLAB,在server模式下默认开启<br/>
+-XX:+ResizeTLAB 开启自动调节TLAB的大小
+-XX:TLABSize  人工指定TLAB的大小
+-XX:TLABRefillWasteFraction  默认64，表示约1/64的TLAB空间作为refill_waste,既允许浪费的空间比例<br/>
+
 GC日志相关的JVM参数
 ---
 -XX:+PrintGC  简单的GC日志<br/>
@@ -39,6 +49,8 @@ GC日志相关的JVM参数
 -XX:MaxMetaspaceSize=64M JDK1.8后只有元数据区，默认为系统内存限制，也可进行限制<br>
 -XX:ServivorRatio 新生代中Eden区与Servivor区的比值<br/>
 -XX:NewRatio=老年代/新生代   新生代与老年代的比例 <br/>
+-XX:PretenureSizeThreshold 直接进入老年代的阀值
+-XX:MaxTretenuringThreshold 进入老年代的最大值
 
 G1收集器配置
 ---
@@ -47,5 +59,11 @@ G1收集器配置
                      混合GC不行是会触发FullGC<br/>
 -XX:ParallelGCThreads 垃圾回收器并发线程数<br/>
 -XX:InitiatingHeapOccupancyPercent 内存使用率达到多少是触发并发标记<b/>
+
+其它
+---
+-XX:+Inline 打开方法内联
+-XX:FreqInlineSize 热点代码内联的大小阀值，超过该阀值的内联优化都不执行
+-XX:ReservedCodeCacheSize 编译代码缓冲区大小，一但超过缓冲区JIT就停止工作
                      
 
