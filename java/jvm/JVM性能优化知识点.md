@@ -22,3 +22,20 @@ GC日志相关的JVM参数
 ---
 -XX:TraceClassLoding 追踪类加载<br/>
 -XX:TraceClassLoding 追踪类卸载<br/>
+
+堆溢出参数
+---
+-XX:+HeapDumpOnOutOfMemoryError 发生OOM时Dump堆信息<br/>
+-XX:HeapDumpPath 堆信息Dump的保存位置<br/>
+
+堆栈相关参数
+---
+-Xmx8G JVM最大可用内存<br/>
+-Xms8G JVM最小可用内存<br/>
+-Xss
+-Xmn3G 新生代大小<br/>
+-XX:PermSize=64M 方法区（永久代）内存大小<br/>
+-XX:MaxPermSize=64M 方法区（永久代）最大内存大小<br/>
+-XX:MaxMetaspaceSize=64M JDK1.8后只有元数据区，默认为系统内存限制，也可进行限制<br>
+-XX:ServivorRatio 新生代中Eden区与Servivor区的比值<br/>
+-XX:NewRatio=老年代/新生代   新生代与老年代的比例 <br/>
