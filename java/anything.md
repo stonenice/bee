@@ -10,3 +10,5 @@
 - Caffeine 本地缓存库，兼容Guava API且优于它，原因为Caffeine采用Window-LFU 算法好于 Guava采用的LRU算法
 - commons-text 字符串模版替换StringSubstitutor
 - easyexcel alibaba出品的excel操作库
+- javapoet 链式生成字节码
+
