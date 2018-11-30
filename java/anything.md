@@ -11,4 +11,5 @@
 - commons-text 字符串模版替换StringSubstitutor
 - easyexcel alibaba出品的excel操作库
 - javapoet 链式生成字节码
+- google-java-format 代码格式库，dagger底层基于javapoet和google-java-format实现
 
