@@ -4,3 +4,9 @@
     * http://idea.iteblog.com/key.php
 
 2. Gradle编译Scala： https://docs.gradle.org/current/userguide/scala_plugin.html
+
+### Java常用库
+- tink Google加密/认证一体的AEAD库
+- Caffeine 本地缓存库，兼容Guava API且优于它，原因为Caffeine采用Window-LFU 算法好于 Guava采用的LRU算法
+- commons-text 字符串模版替换StringSubstitutor
+- easyexcel alibaba出品的excel操作库
