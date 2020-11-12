@@ -1,6 +1,8 @@
 【参考资料】
 https://zhuanlan.zhihu.com/p/33915892
 
+https://blog.csdn.net/zhxdick/article/details/108627063
+
 ```c++
 
 // hashCode() generation :
