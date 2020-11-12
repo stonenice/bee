@@ -1,3 +1,6 @@
+/**
+ * 现有的替代工具：org.apache.commons.lang.text.StrSubstitutor
+ */
 public class JString {
 
         public final static String format(String tpl, String json) {
